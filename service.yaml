@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot
+  namespace: dev
+  labels:
+    role: service
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  revisionHistoryLimit: 4
+  replicas: 2
+  minReadySeconds: 20
+  selector:
+    matchLabels:
+      role: service
+  template:
+    metadata:
+      name: service
+      labels:
+        app: service
+        role: service
+        version: v1
+    spec:
+      containers:
+        - name: shoppingbackend
+          image: iddp/shoppingbackend:latest
+          ports:
+           - containerPort: 8080
+          env:           
+           - name: POSTGRES_USER
+             valueFrom:
+               configMapKeyRef:
+                 name: postgres-config
+                 key: database-user
+           - name: POSTGRES_PASSWORD
+             valueFrom:
+               configMapKeyRef:
+                 name: postgres-config
+                 key: database-password
+           - name: POSTGRES_HOST
+             valueFrom:
+               configMapKeyRef:
+                 name: hostname-config
+                 key: postgres_host
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: dev
+  labels:
+    app: service
+spec:
+  type: NodePort
+  ports:
+   - targetPort: 8080
+     port: 8080
+     nodePort: 31008     
+  selector:
+   app: service
+   role: service

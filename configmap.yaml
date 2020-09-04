@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: dev
+data:
+  #database-name: postgresdb
+  database-user: postgres
+  database-password: root
