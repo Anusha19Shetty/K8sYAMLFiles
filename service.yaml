@@ -46,21 +46,3 @@ spec:
                configMapKeyRef:
                  name: hostname-config
                  key: postgres_host
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: backend
-  namespace: dev
-  labels:
-    app: service
-spec:
-  type: NodePort
-  ports:
-   - targetPort: 8080
-     port: 8080
-     nodePort: 31008     
-  selector:
-   app: service
-   role: service
